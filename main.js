@@ -1,28 +1,26 @@
 import Exponent from 'exponent';
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+
+import PomodoroCounter from './components/PomodoroCounter';
 
 class App extends React.Component {
+  state = {
+    isRunning: false
+  }
+
+  onStartStop() {
+    this.setState(prevState => ({
+      isRunning: !prevState.isRunning
+    }));
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text>wow much mobile</Text>
-      </View>
+      <PomodoroCounter
+        isRunning={this.state.isRunning}
+        onStartStopPressed={() => this.onStartStop()} />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 Exponent.registerRootComponent(App);
