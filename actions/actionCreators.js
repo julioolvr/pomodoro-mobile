@@ -1,4 +1,9 @@
-import { LENGTH_CHANGE, TOGGLE_RUNNING } from './actionTypes';
+import {
+  LENGTH_CHANGE,
+  START_POMODORO,
+  STOP_POMODORO,
+  TICK
+} from './actionTypes';
 
 export function changeLength(newLength) {
   return {
@@ -7,8 +12,21 @@ export function changeLength(newLength) {
   };
 }
 
-export function toggleRunning() {
+export function startPomodoro() {
   return {
-    type: TOGGLE_RUNNING
+    type: START_POMODORO
   }
+}
+
+export function stopPomodoro() {
+  return {
+    type: STOP_POMODORO
+  }
+}
+
+export function tick(secondsElapsed) {
+  return {
+    type: TICK,
+    payload: secondsElapsed
+  };
 }

@@ -7,6 +7,7 @@ import {
   View
 } from 'react-native';
 
+import Ticker from '../ticker';
 import AnimatedBackgroundView from './AnimatedBackgroundView';
 
 const styles = StyleSheet.create({
@@ -22,8 +23,48 @@ const styles = StyleSheet.create({
 });
 
 export default class extends React.Component {
+  state = {
+    ticker: null
+  }
+
+  start() {
+    this.setState((prevState, props) => {
+      props.onStart();
+
+      return {
+        ticker: new Ticker(newSecond => {
+          props.onSecondPassed(newSecond);
+
+          if (newSecond >= props.length * 60) {
+            this.stop();
+          }
+        })
+      };
+    })
+  }
+
+  stop() {
+    this.setState((prevState, props) => {
+      props.onStop();
+
+      if (prevState.ticker) {
+        prevState.ticker.cancel();
+      }
+
+      return {
+        ticker: null
+      };
+    })
+  }
+
   render() {
-    const { isRunning, length, onStartStopPressed, onLengthChanged } = this.props;
+    const {
+      isRunning,
+      length,
+      onStart,
+      onStop,
+      onLengthChanged
+    } = this.props;
 
     const stoppedBackgroundColor = '#E7453F';
     const runningBackgroundColor = '#00CB50';
@@ -49,7 +90,9 @@ export default class extends React.Component {
 
         <Button
           title={isRunning ? 'Stop' : 'Start'}
-          onPress={onStartStopPressed} />
+          onPress={isRunning ?
+            (() => this.stop()) :
+            (() => this.start())} />
       </AnimatedBackgroundView>
     );
   }
