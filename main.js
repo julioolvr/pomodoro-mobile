@@ -1,35 +1,21 @@
 import Exponent from 'exponent';
 import React from 'react';
+import { Provider, connect } from 'react-redux';
 
+import store from './store';
 import PomodoroCounter from './components/PomodoroCounter';
+import { changeLength, toggleRunning } from './actions/actionCreators';
 
-class App extends React.Component {
-  state = {
-    isRunning: false,
-    pomodoroLength: 25
-  }
+const App = connect(({ pomodoro }) => ({
+  isRunning: pomodoro.isRunning,
+  length: pomodoro.pomodoroLength
+}), {
+  onLengthChanged: changeLength,
+  onStartStopPressed: toggleRunning
+})(PomodoroCounter);
 
-  onStartStop() {
-    this.setState(prevState => ({
-      isRunning: !prevState.isRunning
-    }));
-  }
-
-  onLengthChanged(newLength) {
-    this.setState({
-      pomodoroLength: newLength
-    })
-  }
-
-  render() {
-    return (
-      <PomodoroCounter
-        length={this.state.pomodoroLength}
-        onLengthChanged={newLength => this.onLengthChanged(newLength)}
-        isRunning={this.state.isRunning}
-        onStartStopPressed={() => this.onStartStop()} />
-    );
-  }
-}
-
-Exponent.registerRootComponent(App);
+Exponent.registerRootComponent(() => (
+  <Provider store={store}>
+    <App />
+  </Provider>
+));

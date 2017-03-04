@@ -1,0 +1,2 @@
+export const LENGTH_CHANGE = 'LENGTH_CHANGE';
+export const TOGGLE_RUNNING = 'TOGGLE_RUNNING';
