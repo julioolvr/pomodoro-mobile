@@ -83,6 +83,7 @@ export default class extends React.Component {
             value={length.toString()}
             onChangeText={text => onLengthChanged(Number(text))}
             keyboardType="numeric"
+            editable={!isRunning}
             style={[styles.mainText, { height: 40 }]}/>
 
           <Text style={styles.mainText}>minutes Pomodoro</Text>
