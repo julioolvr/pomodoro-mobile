@@ -1,7 +1,5 @@
 import { TICK, START_POMODORO, STOP_POMODORO } from '../actions/actionTypes';
 
-import Ticker from '../ticker';
-
 const initialState = { secondsElapsed: 0 };
 
 export default function timeReducer(state = initialState, action) {

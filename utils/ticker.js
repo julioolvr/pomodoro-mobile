@@ -1,5 +1,3 @@
-import * as actions from './actions/actionCreators';
-
 export default class {
   constructor(onSecond = () => {}) {
     this.startedAt = Date.now();

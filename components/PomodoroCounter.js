@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Notifications, Permissions } from 'exponent';
 
-import Ticker from '../ticker';
+import Ticker from '../utils/ticker';
 import AnimatedBackgroundView from './AnimatedBackgroundView';
 
 const styles = StyleSheet.create({
@@ -25,12 +25,12 @@ const styles = StyleSheet.create({
 
 export default class extends React.Component {
   state = {
-    ticker: null,
-    scheduledNotification: null
+    ticker: null
   }
 
   start() {
-    const { length } = this.props;
+    const { length, storeScheduledNotification } = this.props;
+
     Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS);
 
     Notifications.scheduleLocalNotificationAsync({
@@ -38,16 +38,17 @@ export default class extends React.Component {
       body: 'Your pomodoro is over! 🍅'
     }, {
       time: (new Date()).getTime() + 1000 * 60 * length
-    }).then(id => this.setState({ scheduledNotification: id }));
+    }).then(storeScheduledNotification);
 
     this.setState((prevState, props) => {
-      props.onStart();
+      const { onStart, onSecondPassed, length } = props;
+      onStart();
 
       return {
         ticker: new Ticker(newSecond => {
-          props.onSecondPassed(newSecond);
+          onSecondPassed(newSecond);
 
-          if (newSecond >= props.length * 60) {
+          if (newSecond >= length * 60) {
             this.stop();
           }
         })
@@ -57,13 +58,14 @@ export default class extends React.Component {
 
   stop() {
     this.setState((prevState, props) => {
-      props.onStop();
+      const { onStop, cancelCurrentNotification, currentNotificationId } = props;
+      onStop();
 
       if (prevState.ticker) {
         prevState.ticker.cancel();
       }
 
-      if (prevState.scheduledNotification) {
+      if (currentNotificationId) {
         // TODO: Right now, if the application is killed before the pomodoro ends,
         // the notification stays scheduled. If the user starts the app again, and
         // starts a new Pomodoro, the old notification will still show up even
@@ -71,7 +73,8 @@ export default class extends React.Component {
         // Probably the best way to handle this is to persist app state when it is
         // closed so if a Pomodoro had been started before, it can be resumed as if
         // the app was never closed.
-        Notifications.cancelScheduledNotificationAsync(prevState.scheduledNotification);
+        Notifications.cancelScheduledNotificationAsync(currentNotificationId);
+        cancelCurrentNotification();
       }
 
       return {
